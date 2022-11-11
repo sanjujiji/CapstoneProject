@@ -5,7 +5,7 @@ const status = require("http-status-codes");
 const db = require('../models');
 const User = db.User;
 const bcrypt = require('bcrypt');
-const TokenGenerator = require('uuid-token-generator');
+const jwt = require('jsonwebtoken');
 
 //1. User registration
 exports.signup = (req,res) => {
@@ -155,9 +155,16 @@ exports.signup = (req,res) => {
                                         return;     
                                     }
                                     else {
-                                        const tokgen = new TokenGenerator(); // Default is a 128-bit token encoded in base58
-                                        const accessTokenGenerated = tokgen.generate();
-                                        res.header('x-auth-token',accessTokenGenerated);
+                                        var userData  = {
+                                            username : document[0].user_name,
+                                            role : document[0].role,
+                                            timestamp : new Date()
+                                        };
+                                        const secretKey = "eshopUpgrad";
+                                        const algo = {algorithm : 'HS256'};
+                                        const token = jwt.sign(userData,secretKey,algo );
+                                        console.log(token);
+                                        res.header('x-auth-token',token);
                                         const successResponse = {
                                             email : email,
                                             name : document[0].name,

@@ -31,6 +31,9 @@ db.mongoose
 //load the app routes for user
     require('./routes/user.routes')(app);
 
+//load the routes for address
+    require('./routes/address.routes')(app);
+
 // set up a default route for / 
     app.get("/", (req, res) => {
         res.json({ message: "Upgrad Eshop application" });
