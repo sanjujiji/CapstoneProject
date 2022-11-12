@@ -7,9 +7,10 @@ module.exports = app => {
 
     //require the specific controller file
     var address = require("../controllers/address.controller");
+    var authorizationUser = require("../middleware/authorizationUser");
 
     //1. Route for adding a new address
-    router.post("/address",address.add);
+    router.post("/address",authorizationUser,address.add);
 
     //All APIs would start with '/'
     app.use('/', router);

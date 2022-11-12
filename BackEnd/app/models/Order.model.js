@@ -7,6 +7,7 @@ const { ObjectID } = require("bson");
 module.exports = mongoose => {
     const Orders = mongoose.model("eshop_order",mongoose.Schema({
 
+        orderId             : {type : Number},
         address             : {type : ObjectID},
         product             : {type : ObjectID},
         quantity            : {type : Number},

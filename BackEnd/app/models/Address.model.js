@@ -9,6 +9,7 @@ const { CREATED } = require("http-status-codes");
 module.exports = mongoose => {
     const Address = mongoose.model("eshop_shipping_address",mongoose.Schema({
 
+        addressId       : {type : Number},
         city            : {type : String},
         landmark        : {type : String},
         name            : {type : String},

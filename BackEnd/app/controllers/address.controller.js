@@ -6,7 +6,7 @@ const db = require('../models');
 const address = db.Address;
 const user = db.User;
 const jwt = require('jsonwebtoken');
-const { User } = require("../models");
+
 
 exports.add = (req,res) => {
 //Access to this endpoint requires authentication
@@ -29,28 +29,19 @@ exports.add = (req,res) => {
     var contactNo = req.body.phoneNo;
     var name = req.body.name;
 
-    //Basic Validation to check if the user has logged in
-    var decodedUserName = "";
-    var message = "Please Login first to access this endpoint";
-    if (!authToken){
-        res.status(status.StatusCodes.UNAUTHORIZED).send({message : message});
-        return;
-    }
-    else {
-        //check if it is a valid auth token
+        var message;
         const secretKey = "eshopUpgrad";
         jwt.verify(authToken,secretKey,(err,decoded) => {
             if (decoded){
                 decodedUserName = decoded.username;
             }
             else {
+                message = "User name not found!";
                 res.status(status.StatusCodes.UNAUTHORIZED).send({message : message});
                 return;
             }
         });
-        
-        
-    }
+    
     //Mandatory input parameters check
     message = "Please provide the Zipcode, State, Street, City, Phone Number and Name to continue...";
     if (!zipCode || !state || !street || !city || !contactNo || !name){
@@ -90,7 +81,25 @@ exports.add = (req,res) => {
 
     promise.
         then(() => {
-            var addressObj = new address({
+            //get maxOrderid to increment it by 1
+            var maxAddressId = 0;
+            var promiseAdd = new Promise((resolve,reject) => {
+                address.find({},{addressId : 1, _id:0},(err,results)=>{
+                    if (results.length > 0){
+                        maxAddressId = results[0].addressId;
+                        maxAddressId += 1;
+                        resolve();
+                    }
+                    else {
+                        reject();
+                    }
+                }).sort({addressId : -1}).limit(1)
+            });
+
+            promiseAdd
+              .then(()=>{
+                var addressObj = new address({
+                    addressId       : maxAddressId,
                     city            : city,
                     landmark        : landmark,
                     name            : name,
@@ -135,12 +144,20 @@ exports.add = (req,res) => {
                         return;
                     })
                     .catch(err => {
-                        res.status(status.StatusCodes.INTERNAL_SERVER_ERROR).send("Unable to save the user!");
+                        message = "Unable to save the address!";
+                        res.status(status.StatusCodes.INTERNAL_SERVER_ERROR).send({message : message});
                         return;   
                     })
-        }).
-        catch(() => {
-            res.status(status.StatusCodes.INTERNAL_SERVER_ERROR).send("Unable to save the user!");
+                })
+                .catch(() => {
+                    message = "Unable to retrieve the address Id!";
+                    res.status(status.StatusCodes.INTERNAL_SERVER_ERROR).send({message : message});
+                    return;    
+                })
+        })
+        .catch(() => {
+            message = "Invalid User Name";
+            res.status(status.StatusCodes.INTERNAL_SERVER_ERROR).send({message : message});
             return; 
         });
 }

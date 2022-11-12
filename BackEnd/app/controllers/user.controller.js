@@ -38,9 +38,9 @@ exports.signup = (req,res) => {
 
     */
         //Checking for the correct mail format
-        var messageString = "Invalid email-id format!";
+        var message = "Invalid email-id format!";
         if ((email.indexOf('@') === -1 ) || (email.indexOf('.') === -1)){
-            res.status(status.StatusCodes.BAD_REQUEST).json({message : messageString});
+            res.status(status.StatusCodes.BAD_REQUEST).send({message : message});
             return;
         }
         else {
@@ -52,15 +52,15 @@ exports.signup = (req,res) => {
             let regExp1 = /^[a-z]+$/
             
             if(emailPart1.length < 1 || emailPart2.length < 1 || emailPart3.length < 2 || emailPart3.length > 6) {
-                res.status(status.StatusCodes.BAD_REQUEST).json({message : messageString});
+                res.status(status.StatusCodes.BAD_REQUEST).json({message : message});
                 return; 
             }
             else if (( emailPart1.search(regExp) === -1) || (emailPart2.search(regExp) === -1)){
-                res.status(status.StatusCodes.BAD_REQUEST).json({message : messageString});
+                res.status(status.StatusCodes.BAD_REQUEST).send({message : message});
                 return; 
             }
             else if ((emailPart3.search(regExp1) === -1)){
-                res.status(status.StatusCodes.BAD_REQUEST).json({message : messageString});
+                res.status(status.StatusCodes.BAD_REQUEST).json({message : message});
                 return; 
             }
            
@@ -70,8 +70,8 @@ exports.signup = (req,res) => {
         */
         let regExp2 = /^[0-9]+$/;
         if ((contactNo.search(regExp2) === -1) || (contactNo.length != 10)){
-            var messageString = "Invalid contact number!";
-            res.status(status.StatusCodes.BAD_REQUEST).json({message : messageString});
+            message = "Invalid contact number!";
+            res.status(status.StatusCodes.BAD_REQUEST).send({message : message});
             return;
         }
         // res.status(status.StatusCodes.OK);
@@ -79,11 +79,11 @@ exports.signup = (req,res) => {
 
         /*Check 4 : check if the email is already registered
         */
-        var messageString = "Try any other email, this email is already registered!";
+        message = "Try any other email, this email is already registered!";
         const filter = {email : email}
         User.find(filter,(err,document) => {
             if(document.length > 0){
-                res.status(status.StatusCodes.BAD_REQUEST).json({message : messageString});
+                res.status(status.StatusCodes.BAD_REQUEST).send({message : message});
                 return;
             }
             else {
@@ -117,12 +117,15 @@ exports.signup = (req,res) => {
                                 return;
                             })
                             .catch(err => {
-                                res.status(status.StatusCodes.INTERNAL_SERVER_ERROR).send("Unable to save the user!");
+                                message = "Unable to save the user!";
+                                res.status(status.StatusCodes.INTERNAL_SERVER_ERROR).send({message : message});
                                 return;   
                             })
                     })
                     .catch((err) => {
-                        console.log(err);
+                        message = "Unable to save the user!";
+                        res.status(status.StatusCodes.INTERNAL_SERVER_ERROR).send({message : message});
+                        return;
                     })
             }
         })
@@ -137,21 +140,21 @@ exports.signup = (req,res) => {
         var passwordNew = req.body.password;
         var email = req.body.email;
 
-        var messageString = "This email has not been registered!";
+        var message = "This email has not been registered!";
         const filter = {email : email}
         User.find(filter,(err,document) => {
             if(document.length === 0){
-                res.status(status.StatusCodes.BAD_REQUEST).json({message : messageString});
+                res.status(status.StatusCodes.BAD_REQUEST).json({message : message});
                 return;
             }
             else {
                 var storedPassword = document[0].password;
-                messageString = "Invalid Credentials!"; 
+                message = "Invalid Credentials!"; 
                              
                             bcrypt.compare(passwordNew,storedPassword)
                                 .then((result) => {
                                     if (!result){
-                                        res.status(status.StatusCodes.BAD_REQUEST).json({message : messageString});
+                                        res.status(status.StatusCodes.BAD_REQUEST).json({message : message});
                                         return;     
                                     }
                                     else {

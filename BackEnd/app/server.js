@@ -8,7 +8,9 @@ const bodyparser = require("body-parser");
 //express object
 const app = express();
 app.use(express.json());
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNBbmp1SmlqaSIsInJvbGUiOiJ1c2VyIiwidGltZXN0YW1wIjoiMjAyMi0xMS0xMVQxMjo1MjoxNC45MzRaIiwiaWF0IjoxNjY4MTcxMTM0fQ.ffNNnSbiK36NzHqWqZ53hxDY5cr4t5YkzS4vwjcswEg
 
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNBbmp1SmlqaSIsInJvbGUiOiJhZG1pbiIsInRpbWVzdGFtcCI6IjIwMjItMTEtMTFUMTM6Mjc6NTAuNjQ5WiIsImlhdCI6MTY2ODE3MzI3MH0.cKbpYPlTejtixJWP1NbHNJYuORrm0iFA5L2E-cP84tA
 
 app.use(bodyparser.urlencoded({extended:false}))
 app.use(bodyparser.json())
@@ -34,6 +36,12 @@ db.mongoose
 //load the routes for address
     require('./routes/address.routes')(app);
 
+//load the routes for product
+    require('./routes/product.routes')(app);    
+
+//load the routes for orders
+    require('./routes/order.routes')(app);  
+    
 // set up a default route for / 
     app.get("/", (req, res) => {
         res.json({ message: "Upgrad Eshop application" });
