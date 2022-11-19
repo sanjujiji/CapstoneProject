@@ -185,7 +185,7 @@ exports.getAddress = (req,res) => {
     var emailId = req.query.emailid ;
     //Get the list of addresses based on the requested parameters
 
-    var filter = {email : {'$regex':email,'$options':'i'}};
+    var filter = {email : {'$regex':emailId,'$options':'i'}};
     var userObj = "" ;   
 
     var promise = new Promise((resolve,reject) => {
